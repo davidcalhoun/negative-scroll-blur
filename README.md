@@ -7,13 +7,19 @@ Inspired by UI seen on the Foursquare app.
 
 [Demo](http://davidbcalhoun.com/a/negative-scroll-blur.html)
 
+Video
+====================
+[![ScreenShot](video-screenshot.jpg)](http://www.youtube.com/watch?v=wfuVM1P_qgg)
+
 Dependencies
 ====================
 0 dependencies.  Works in pure JavaScript.
 
-Video
+Usage
 ====================
-[![ScreenShot](video-screenshot.jpg)](http://www.youtube.com/watch?v=wfuVM1P_qgg)
+You have two options:
+* Add the id "blurMe" on the element you want blurred
+* Scroll to the end of the JavaScript and change the "#blurMe" to the jQuery-like selector you'd like to use (note: querySelector is used under the hood, NOT jQuery)
 
 Support
 ====================
