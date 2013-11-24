@@ -1,11 +1,15 @@
-negative-scroll-blur
+Negative Scroll Blur
 ====================
 
-Make stuff blurry when there's negative top scroll.
+Make stuff blurry when there's negative top scroll.  Completely superfluous yet fun.  Intended for page heading graphics.
 
 Inspired by UI seen on the Foursquare app.
 
 [Demo](http://davidbcalhoun.com/a/negative-scroll-blur.html)
+
+Dependencies
+====================
+0 dependencies.  Works in pure JavaScript.
 
 Video
 ====================
