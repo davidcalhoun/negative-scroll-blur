@@ -19,7 +19,7 @@ Usage
 ====================
 You have two options:
 * Add the id "blurMe" on the element you want blurred
-* Scroll to the end of the JavaScript and change the "#blurMe" to the jQuery-like selector you'd like to use (note: querySelector is used under the hood, NOT jQuery)
+* Scroll to the end of the JavaScript and change "#blurMe" to the jQuery-like selector you'd like to use (note: querySelector is used under the hood, NOT jQuery)
 
 Support
 ====================
