@@ -33,6 +33,7 @@ Tested to work in:
 
 TODO
 ====================
+* zooming with blurring
 * cross-browser prefix hell support
 * optimizations using setTimeout for debouncing/throttling
 * add transform3d HW-acceleration hack within JS itself
