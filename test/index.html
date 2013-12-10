@@ -15,12 +15,13 @@ html, body {
 }
 
 body {
+	
 	width: 100%;
+
 }
 
 img {
 	width: 100%;
-	-webkit-transform: translate3d(0, 0, 0);
 }
 
 section {
@@ -48,9 +49,142 @@ section {
 <p>Esse 8-bit yr pariatur you probably haven't heard of them, fixie irure food truck Neutra leggings ea typewriter shabby chic elit. Accusamus mumblecore wayfarers dolor American Apparel cred magna squid sapiente. Wolf artisan qui, keffiyeh occupy PBR tote bag tempor DIY polaroid deep v. VHS umami forage ex, cray sapiente keffiyeh plaid art party lo-fi selfies culpa viral. Helvetica salvia whatever shabby chic et, assumenda delectus art party cred trust fund wayfarers deserunt pour-over. Tousled stumptown sriracha, Helvetica Cosby sweater biodiesel post-ironic tempor id Carles. Mustache Intelligentsia fixie gluten-free Neutra.</p>
 
 <p>Non nulla kitsch meh voluptate. Butcher ea Schlitz artisan. Sunt church-key officia, banh mi hella Shoreditch tempor proident. Culpa do nulla small batch elit, odio bespoke dolor flannel +1 90's. Small batch enim synth Pitchfork, VHS ea Portland labore pickled ad sint. Disrupt irure Truffaut kale chips flexitarian organic, pug biodiesel kitsch Thundercats meggings nihil typewriter photo booth. Shabby chic magna laboris sriracha seitan duis.</p>
+
+<p><b>(see the code on <a href="https://github.com/davidcalhoun/negative-scroll-blur">Github</a>)</b></p>
+<p><a href="http://davidbcalhoun.com/2013/introducing-negative-scroll-blur-for-browsers-that-support-css-filters">Also read the blog post</a></p>
 </section>
 
-<script src="../negative-scroll-blur-min.js"></script>
+<script>
+
+/**
+ *	Negative Scroll Blur
+ *	Make stuff blurry when there's negative top scroll.
+ *
+ *	https://github.com/davidcalhoun/negative-scroll-blur
+ */
+;(function(element, options) {
+	"use strict";
+
+	if(!Array.prototype.map) return;  // <IE9
+
+	var touchstartY;
+
+	//	Helper methods
+	var $   = document.querySelector.bind(document),
+		evt = function(name, callback, scope){return (document || scope).addEventListener(name, callback, false)},
+		cssPrefixes = ["", "-webkit-"];
+
+	/**
+	 *	init
+	 *	
+	 *	@todo setTimeouts for events
+	 */
+	var init = function() {
+		/**
+		  *	If the element is a string, assume it's a jQuery-like DOM selector,
+		  *	else assume it's a DOM Node.
+		  */
+		element = (typeof element == "string") ? $(element) : element;
+
+		evt("scroll", scrollDebounce, window);
+
+		/**
+		 *	Add listeners for mobile.
+		 *	This is necessary because iOS7 has no "negative scroll", nor
+		 *	a scroll event that fires while actually scrolling (only at
+		 *	the end of scrolling).
+		 */
+		if("ontouchstart" in document) {
+			evt("touchstart", touchstart);
+			evt("touchmove", touchmove);
+			evt("touchend", touchend);		
+		}
+
+		//	HW-accelerate on init
+		element.setAttribute("style", "-webkit-transform:translate3d(0,0,0);");
+	}
+
+	/**
+	 *	touchstart
+	 *
+	 *	@param {Object} e Touch event
+	 */
+	var touchstart = function(e) {
+		if(window.scrollY == 0) {
+			touchstartY = e.touches[0].screenY;
+		}
+	}
+
+	/**
+	 *	touchend
+	 *
+	 *	@param {Object} e Touch event
+	 */
+	var touchend = function(e) {
+		touchstartY = null;
+	}	
+
+	/**
+	 *	touchmove
+	 *
+	 *	@param {Object} e Touch event
+	 */
+	var touchmove = function(e) {
+		if(!touchstartY || (touchstartY - e.touches[0].screenY > 0)) {
+			return;
+		}
+
+		blurElement(element, ((Math.abs(touchstartY - e.touches[0].screenY) / 3) - 3));
+	}
+
+	/**
+	 *	onScroll
+	 *	CSS blur a specified element
+	 *
+	 *	@param {DOM Node} element
+	 *	@param {Integer} px Number of pixels to blur
+	 */
+	var onScroll = function() {
+		if(window.scrollY > 0) return;
+
+		transformElement(element, Math.abs(window.scrollY));
+	}
+
+	var timeout;
+
+	var scrollDebounce = function() {
+		window.requestAnimationFrame(onScroll);
+	}
+
+	/**
+	 *	transformElement
+	 *	CSS blur a specified element
+	 *
+	 *	@param {DOM Node} element
+	 *	@param {Integer} px Number of pixels to blur
+	 */
+	var transformElement = function(element, scrollPx) {
+		scrollPx = scrollPx / 2;
+
+		var style, scale;
+
+		style = "-webkit-transition: -webkit-transform 0.1s linear;-webkit-transform-origin-y: 100%;transform-origin-y: 100%;";
+
+		style += cssPrefixes.map(function(key){return key + "filter:blur(" + Math.floor(scrollPx) + "px);"}).join("");
+
+		if(options.zoom) {
+			scale = 1 + (scrollPx / 20);
+			style += "-webkit-transform: scale3d(" + scale + ", " + scale + ", 1)";
+		}
+
+		element.setAttribute("style", style);
+	}
+
+	//	Fire off init when the DOM is interactive
+	document.addEventListener("DOMContentLoaded", init);
+})("#blurMe", {zoom: true});
+
+</script>
 
 </body>
 </html>

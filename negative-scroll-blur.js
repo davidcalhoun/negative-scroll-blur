@@ -4,14 +4,17 @@
  *
  *	https://github.com/davidcalhoun/negative-scroll-blur
  */
-;(function(element) {
+;(function(element, options) {
 	"use strict";
 
-	var touchstartY;
+	if(!Array.prototype.map) return;  // <IE9
+
+	var touchstartY, originalStyle, styleReset;
 
 	//	Helper methods
 	var $   = document.querySelector.bind(document),
-		evt = function(name, callback, scope){return (document || scope).addEventListener(name, callback, false)};
+		evt = function(name, callback, scope){return (document || scope).addEventListener(name, callback, false)},
+		cssPrefixes = ["", "-webkit-"];
 
 	/**
 	 *	init
@@ -25,7 +28,7 @@
 		  */
 		element = (typeof element == "string") ? $(element) : element;
 
-		evt("scroll", blurOnScrollUp, window);
+		evt("scroll", scrollDebounce, window);
 
 		/**
 		 *	Add listeners for mobile.
@@ -38,6 +41,10 @@
 			evt("touchmove", touchmove);
 			evt("touchend", touchend);		
 		}
+
+		//	HW-accelerate on init
+		originalStyle = element.getAttribute("style") || "";
+		element.setAttribute("style", originalStyle + ";-webkit-transform:translate3d(0,0,0);");
 	}
 
 	/**
@@ -74,31 +81,56 @@
 	}
 
 	/**
-	 *	blurElement
+	 *	onScroll
 	 *	CSS blur a specified element
 	 *
 	 *	@param {DOM Node} element
 	 *	@param {Integer} px Number of pixels to blur
 	 */
-	var blurOnScrollUp = function() {
+	var onScroll = function() {
 		if(window.scrollY > 0) return;
 
-		blurElement(element, Math.abs(window.scrollY / 2));
+		styleReset = false;
+
+		transformElement(element, window.scrollY);
+	}
+
+	var timeout;
+
+	var scrollDebounce = function() {
+		window.requestAnimationFrame(onScroll);
 	}
 
 	/**
-	 *	blurElement
+	 *	transformElement
 	 *	CSS blur a specified element
 	 *
 	 *	@param {DOM Node} element
 	 *	@param {Integer} px Number of pixels to blur
-	 *
-	 *	@todo Cross-browser support
 	 */
-	var blurElement = function(element, px) {
-		element.setAttribute("style", "-webkit-filter: blur(" + px + "px);");
+	var transformElement = function(element, scrollPx) {
+		var px = Math.abs(scrollPx);
+		px = px / 2;
+
+		var style, scale;
+
+		style = originalStyle + ";-webkit-transition: -webkit-transform 0.1s linear;-webkit-transform-origin-y: 100%;transform-origin-y: 100%;";
+
+		if(scrollPx < -1) {
+			style += cssPrefixes.map(function(key){return key + "filter:blur(" + Math.floor(px) + "px);"}).join("");
+
+			if(options.zoom) {
+				scale = 1 + (px / 10);
+				style += "-webkit-transform: scale3d(" + scale + ", " + scale + ", 1)";
+			}			
+		}
+
+		element.setAttribute("style", style);
 	}
 
 	//	Fire off init when the DOM is interactive
 	document.addEventListener("DOMContentLoaded", init);
-})("#blurMe");
+})("#blurMe", {
+	//	Options
+	zoom: true
+});
