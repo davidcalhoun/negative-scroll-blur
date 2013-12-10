@@ -1,7 +1,7 @@
 Negative Scroll Blur
 ====================
 
-Make stuff blurry when there's negative top scroll.  Completely superfluous yet fun.  Intended for page heading graphics.
+Make stuff zoom and blur when there's negative top scroll.  Completely superfluous yet fun.  Intended for page heading graphics.
 
 Inspired by UI seen on the Foursquare app.
 
@@ -9,6 +9,7 @@ Inspired by UI seen on the Foursquare app.
 
 Video
 ====================
+[![ScreenShot](video-screenshot-zoom.jpg)](http://www.youtube.com/watch?v=x_3RQYI5i1c)
 [![ScreenShot](video-screenshot.jpg)](http://www.youtube.com/watch?v=wfuVM1P_qgg)
 
 Dependencies
@@ -21,6 +22,8 @@ You have two options:
 * Add the id "blurMe" on the element you want blurred
 * Scroll to the end of the JavaScript and change "#blurMe" to the jQuery-like selector you'd like to use (note: querySelector is used under the hood, NOT jQuery)
 
+Options can be passed in as a second parameter.  Currently only zoom:true is supported (see example).
+
 Support
 ====================
 Tested to work in:
@@ -30,8 +33,3 @@ Tested to work in:
 * iOS 7 (tested on iPad 2)
 
 (should theoretically work wherever [CSS filters are supported](http://caniuse.com/css-filters))
-
-TODO
-====================
-* optimizations using setTimeout for debouncing/throttling
-* mobile: add CSS transition to transition from blur to unblurred state after scrolling
