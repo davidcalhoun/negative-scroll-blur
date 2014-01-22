@@ -33,3 +33,7 @@ Tested to work in:
 * iOS 7 (tested on iPad 2)
 
 (should theoretically work wherever [CSS filters are supported](http://caniuse.com/css-filters))
+
+TODO
+====================
+* blur with Canvas (seems to be more performant than CSS)
